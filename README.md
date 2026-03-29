@@ -115,8 +115,7 @@ mdconvert/
 │   └── Update_logs/               # 更新日志
 ├── README.md                       # 项目说明文档
 ├── requirements.txt                # 依赖列表
-├── installl_requirements.py        # 安装脚本
-└── main.py                         # 主程序入口
+└── installl_requirements.py        # 安装脚本
 ```
 
 ## 贡献指南
