@@ -221,4 +221,5 @@ class PDFExporter:
             os.makedirs(output_dir, exist_ok=True)
         
         import pdfkit
-        pdfkit.from_string(html_content, output_path)
+        config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+        pdfkit.from_string(html_content, output_path, configuration=config)
