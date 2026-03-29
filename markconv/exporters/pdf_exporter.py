@@ -9,6 +9,29 @@ from typing import Dict, Any
 import markdown2
 
 
+def _register_chinese_fonts():
+    """
+    注册中文字体以支持中文显示
+    
+    xhtml2pdf 基于 ReportLab，默认不支持中文，需要手动注册中文字体
+    """
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    
+    windows_fonts = [
+        ('Microsoft YaHei', 'C:/Windows/Fonts/msyh.ttc'),
+        ('SimHei', 'C:/Windows/Fonts/simhei.ttf'),
+        ('SimSun', 'C:/Windows/Fonts/simsun.ttc'),
+    ]
+    
+    for font_name, font_path in windows_fonts:
+        if os.path.exists(font_path):
+            try:
+                pdfmetrics.registerFont(TTFont(font_name, font_path))
+            except:
+                pass
+
+
 def _markdown_to_html(markdown_content: str) -> str:
     """
     将 Markdown 内容转换为 HTML
@@ -225,5 +248,6 @@ class PDFExporter:
             HTML(string=html_content).write_pdf(output_path)
         except ImportError:
             from xhtml2pdf import pisa
+            _register_chinese_fonts()
             with open(output_path, 'wb') as pdf_file:
                 pisa.CreatePDF(html_content, dest=pdf_file)

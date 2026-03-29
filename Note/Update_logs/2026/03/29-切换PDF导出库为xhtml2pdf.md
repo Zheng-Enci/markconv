@@ -73,3 +73,9 @@ python pdf_example.py
 - 修改 pdf_exporter.py 支持两个 PDF 库
 - 优先使用 WeasyPrint，如果未安装则自动降级到 xhtml2pdf
 - 这样既保证了高级功能（WeasyPrint 的 CSS 支持），又保证了兼容性（xhtml2pdf 的简单安装）
+
+### 2026-03-29 (第三次更新)
+- 解决 xhtml2pdf 中文乱码问题
+- 添加 `_register_chinese_fonts()` 函数注册中文字体
+- 支持 Windows 系统字体：微软雅黑、黑体、宋体
+- 在使用 xhtml2pdf 生成 PDF 前自动注册中文字体
