@@ -99,3 +99,8 @@ python pdf_example.py
 - 复制的中文字体文件：simhei.ttf、simkai.ttf、simfang.ttf、simsunb.ttf
 - 更新 `_register_chinese_fonts()` 函数使用 `.ttf` 文件
 - 更新 HTML CSS 中的 `@font-face` 规则使用 `.ttf` 文件
+
+### 2026-03-29 (第七次更新)
+- 修改 `_link_callback()` 函数返回绝对路径
+- 使用 `os.path.abspath()` 确保字体文件路径为绝对路径
+- 解决 xhtml2pdf 无法打开临时字体文件的问题

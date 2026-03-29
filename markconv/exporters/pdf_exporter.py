@@ -52,7 +52,8 @@ def _link_callback(uri, rel):
         return uri
     
     if uri.startswith('fonts/'):
-        return os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), uri)
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        return os.path.abspath(os.path.join(base_dir, uri))
     
     return os.path.join(os.path.dirname(__file__), uri)
 
