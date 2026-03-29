@@ -1,17 +1,15 @@
 # 从 markconv 包中导入 MDConverter 类
 from markconv import MDConverter
-from markconv.exporters import PDFExporter
 
 
 def pdf_basic_example():
     """
     PDF 转换基本使用示例
     
-    该函数演示了如何使用 PDFExporter 将 Markdown 文件转换为 PDF 文件
+    该函数演示了如何使用 MDConverter 将 Markdown 文件转换为 PDF 文件
     包括：
-    - 创建 PDF 导出器实例（支持自定义 CSS 样式）
-    - 解析 Markdown 文件
-    - 指定输出 PDF 文件路径
+    - 创建转换器实例（支持自定义 CSS 样式）
+    - 指定输入和输出文件路径
     - 执行转换操作
     - 使用自定义 CSS 文件美化输出
     """
@@ -30,25 +28,14 @@ def pdf_basic_example():
     
     # 定义输入的 Markdown 文件路径（使用原始字符串 r 避免转义问题）
     input_file = r'sample.md'
-    
-    # 解析 Markdown 文件
-    parsed_data = converter.parser.parse_file(input_file)
-    
-    # 创建 PDF 导出器实例
-    # 参数说明：
-    #   - css_file: 自定义 CSS 样式文件的路径（可选）
-    pdf_exporter = PDFExporter(css_file="custom.css")
-    
     # 定义输出的 PDF 文件路径（相对路径）
     output_file = 'examples/sample.pdf'
     
-    # 调用 export 方法执行转换
+    # 调用 to_pdf 方法执行转换
     # 参数说明：
-    #   - parsed_data: 包含 Markdown 解析结果的字典
-    #     - content: Markdown 内容
-    #     - title: 文档标题（可选）
+    #   - input_file: 输入的 Markdown 文件路径
     #   - output_file: 输出的 PDF 文件路径（如果目录不存在会自动创建）
-    pdf_exporter.export(parsed_data, output_file)
+    converter.to_pdf(input_file, output_file)
     
     print(f"PDF 文件已生成: {output_file}")
 
