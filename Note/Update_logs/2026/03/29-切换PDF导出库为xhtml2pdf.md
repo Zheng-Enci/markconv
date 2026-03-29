@@ -163,3 +163,10 @@ python pdf_example.py
 - 修改 pdf_exporter.py 使用 pdfkit.from_string()
 - 更新 requirements.txt，只保留 markdown2 和 pdfkit
 - 更新 setup.py，将 weasyprint 替换为 pdfkit
+
+### 2026-03-29 (第十七次更新)
+- pdfkit 配置成功，PDF 生成正常
+- 清理不再需要的文件：
+  - fonts/ 目录（已删除）
+  - find_fonts.py（临时脚本）
+- .gitignore 已包含 fonts/ 和临时文件忽略规则
