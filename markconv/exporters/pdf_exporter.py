@@ -275,7 +275,12 @@ class PDFExporter:
             HTML(string=html_content).write_pdf(output_path)
         except ImportError:
             from xhtml2pdf import pisa
+            from xhtml2pdf.context import pisaContext
             _register_chinese_fonts()
             
+            context = pisaContext()
+            context.fontName = 'SimHei'
+            context.defaultFont = 'SimHei'
+            
             with open(output_path, 'wb') as pdf_file:
-                pisa.CreatePDF(html_content, dest=pdf_file, encoding='UTF-8', link_callback=_link_callback, default_font='SimHei')
+                pisa.CreatePDF(html_content, dest=pdf_file, encoding='UTF-8', link_callback=_link_callback, context=context)

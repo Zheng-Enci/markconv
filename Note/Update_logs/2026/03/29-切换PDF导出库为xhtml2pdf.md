@@ -131,3 +131,9 @@ python pdf_example.py
 - 发现 `pisa.PMLParser` 不存在，导致 AttributeError
 - 改用 `pisa.CreatePDF` 的 `default_font` 参数
 - 直接在 `pisa.CreatePDF` 中指定默认字体为 SimHei
+
+### 2026-03-29 (第十三次更新)
+- 发现 `default_font` 参数也无效
+- 改用 `xhtml2pdf.context.pisaContext` 创建 context 对象
+- 设置 `context.fontName` 和 `context.defaultFont` 为 SimHei
+- 将 context 作为参数传递给 `pisa.CreatePDF`
