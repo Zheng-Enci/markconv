@@ -213,15 +213,6 @@ class PDFExporter:
         Args:
             html_content (str): HTML 内容字符串
             output_path (str): 输出 PDF 文件的路径
-            
-        Raises:
-            ImportError: 如果未安装 weasyprint 库
         """
-        try:
-            from weasyprint import HTML
-            HTML(string=html_content).write_pdf(output_path)
-        except ImportError:
-            raise ImportError(
-                "需要安装 weasyprint 库才能使用 PDF 导出功能。\n"
-                "请运行: pip install weasyprint"
-            )
+        from weasyprint import HTML
+        HTML(string=html_content).write_pdf(output_path)
