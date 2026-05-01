@@ -1,0 +1,114 @@
+/* Mermaid 图表背景色设置示例 */
+/* Mermaid Diagram Background Color Example */
+
+/* ============================================================
+   方式 3：通过 CSS 设置 Mermaid 图片背景色
+   Method 3: Set Mermaid image background color via CSS
+   ============================================================ */
+
+/* 注意：此方法仅适用于透明背景的 Mermaid 图片 */
+/* Note: This method only works for Mermaid images with transparent background */
+
+/* --------------------------------------------------------
+   基础设置：为所有居中图片容器添加背景色
+   Basic setting: Add background color to all centered image containers
+   -------------------------------------------------------- */
+div[style*="text-align: center"] {
+    /* 背景色 Background color */
+    background-color: #f5f5f5;
+    
+    /* 内边距 Padding */
+    padding: 20px;
+    
+    /* 圆角 Border radius */
+    border-radius: 8px;
+    
+    /* 外边距 Margin */
+    margin: 20px 0;
+    
+    /* 边框 Border */
+    border: 1px solid #e0e0e0;
+}
+
+/* --------------------------------------------------------
+   浅色主题示例 Light theme example
+   -------------------------------------------------------- */
+div[style*="text-align: center"].light-bg {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+}
+
+/* --------------------------------------------------------
+   深色主题示例 Dark theme example
+   -------------------------------------------------------- */
+div[style*="text-align: center"].dark-bg {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+}
+
+/* --------------------------------------------------------
+   彩色背景示例 Colored background examples
+   -------------------------------------------------------- */
+
+/* 蓝色背景 Blue background */
+div[style*="text-align: center"].blue-bg {
+    background-color: #e3f2fd;
+    border: 1px solid #bbdefb;
+}
+
+/* 绿色背景 Green background */
+div[style*="text-align: center"].green-bg {
+    background-color: #e8f5e9;
+    border: 1px solid #c8e6c9;
+}
+
+/* 黄色背景 Yellow background */
+div[style*="text-align: center"].yellow-bg {
+    background-color: #fffde7;
+    border: 1px solid #fff9c4;
+}
+
+/* 粉色背景 Pink background */
+div[style*="text-align: center"].pink-bg {
+    background-color: #fce4ec;
+    border: 1px solid #f8bbd9;
+}
+
+/* --------------------------------------------------------
+   图片样式优化 Image style optimization
+   -------------------------------------------------------- */
+div[style*="text-align: center"] img {
+    /* 最大宽度限制 Maximum width limit */
+    max-width: 100%;
+    
+    /* 高度自适应 Height auto */
+    height: auto;
+    
+    /* 图片阴影 Image shadow */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    /* 圆角 Border radius */
+    border-radius: 4px;
+}
+
+/* --------------------------------------------------------
+   使用说明 Usage Instructions
+   --------------------------------------------------------
+   
+   1. 将此 CSS 文件传递给 MDConverter：
+      Pass this CSS file to MDConverter:
+      
+      converter = MDConverter(css_file="mermaid_css_bg_example.css")
+   
+   2. 确保 Mermaid 图片使用透明背景：
+      Ensure Mermaid images use transparent background:
+      
+      在 mermaid_processor.py 中设置：
+      processor = MermaidProcessor(
+          output_dir='./mermaid_images',
+          background_color='transparent'  # 关键！Key!
+      )
+   
+   3. 转换后的 PDF/HTML 中的 Mermaid 图片将显示设置的背景色
+      The Mermaid images in converted PDF/HTML will show the set background color
+*/
