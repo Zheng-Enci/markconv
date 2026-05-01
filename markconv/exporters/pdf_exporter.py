@@ -5,8 +5,46 @@ PDF 导出器模块
 """
 
 import os
+import re
 from typing import Dict, Any
 import markdown2
+
+from ..tools import MermaidProcessor
+
+
+def _replace_mermaid_with_images(md_content: str, output_dir: str) -> str:
+    """
+    将 Markdown 中的 Mermaid 代码块替换为图片
+    
+    Args:
+        md_content (str): Markdown 内容字符串
+        output_dir (str): 图片输出目录
+        
+    Returns:
+        str: 处理后的 Markdown 内容，Mermaid 代码块已替换为图片引用
+    """
+    pattern = re.compile(r'```mermaid\n(.*?)```', re.DOTALL)
+    
+    # 获取所有匹配项（代码内容，完整匹配字符串）
+    mermaid_blocks = []
+    for match in pattern.finditer(md_content):
+        mermaid_blocks.append((match.group(1), match.group(0)))
+    
+    if not mermaid_blocks:
+        return md_content
+    
+    processor = MermaidProcessor(output_dir=output_dir)
+    result = md_content
+    
+    for i, (mermaid_code, full_match) in enumerate(mermaid_blocks):
+        image_path = processor.render_to_image(mermaid_code)
+        # 使用绝对路径确保 PDF 生成时能找到图片，将反斜杠转为正斜杠
+        abs_image_path = os.path.abspath(image_path).replace('\\', '/')
+        image_markdown = f'\n![Mermaid 图表 {i+1}]({abs_image_path})\n'
+        # 使用字符串替换而不是正则替换，避免反斜杠问题
+        result = result.replace(full_match, image_markdown, 1)
+    
+    return result
 
 
 def _markdown_to_html(markdown_content: str) -> str:
@@ -67,9 +105,10 @@ class PDFExporter:
         将解析后的 Markdown 数据导出为 PDF 文件
         
         该方法执行以下步骤：
-        1. 将 Markdown 内容转换为 HTML
-        2. 将 HTML 包装在完整的 HTML 文档结构中
-        3. 将 HTML 转换为 PDF
+        1. 将 Markdown 中的 Mermaid 代码块渲染为图片
+        2. 将处理后的 Markdown 内容转换为 HTML
+        3. 将 HTML 包装在完整的 HTML 文档结构中
+        4. 将 HTML 转换为 PDF
         
         Args:
             parsed_data (Dict[str, Any]): 包含 Markdown 解析结果的字典
@@ -77,13 +116,19 @@ class PDFExporter:
                 - title: 文档标题（可选）
             output_path (str): 输出 PDF 文件的路径
         """
-        html_content = _markdown_to_html(parsed_data['content'])
-        html_content = self._wrap_html(html_content, parsed_data.get('title', 'Document'))
-        
-        output_dir = os.path.dirname(output_path)
-        if output_dir and not os.path.exists(output_dir):
+        # 获取输出目录
+        output_dir = os.path.dirname(output_path) or '.'
+        if not os.path.exists(output_dir):
             os.makedirs(output_dir, exist_ok=True)
         
+        # 先将 Mermaid 代码块渲染为图片
+        md_content = _replace_mermaid_with_images(parsed_data['content'], output_dir)
+        
+        # 转换为 HTML
+        html_content = _markdown_to_html(md_content)
+        html_content = self._wrap_html(html_content, parsed_data.get('title', 'Document'))
+        
+        # 生成 PDF
         self._html_to_pdf(html_content, output_path)
 
     def _wrap_html(self, body_content: str, title: str) -> str:
@@ -266,8 +311,6 @@ class PDFExporter:
         </head>
         <body>
             {body_content}
-            <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-            <script>mermaid.initialize({{startOnLoad: true}});</script>
         </body>
         </html>
         """
@@ -290,22 +333,20 @@ class PDFExporter:
         """
         将 HTML 内容转换为 PDF 文件
         
-        使用 pdfkit 进行转换，支持 JavaScript 渲染（如 Mermaid 图表）
+        使用 pdfkit 进行转换
         
         Args:
             html_content (str): HTML 内容字符串
             output_path (str): 输出 PDF 文件的路径
         """
-        output_dir = os.path.dirname(output_path)
-        if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir, exist_ok=True)
-        
         import pdfkit
         config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+        
+        output_dir = os.path.dirname(output_path) or '.'
         options = {
-            'javascript-delay': '5000',
-            'enable-javascript': None,
-            'no-stop-slow-scripts': None,
-            'allow': None
+            'enable-local-file-access': None,
+            'allow': output_dir,
+            'disable-external-links': None,
+            'disable-javascript': None
         }
         pdfkit.from_string(html_content, output_path, configuration=config, options=options)
