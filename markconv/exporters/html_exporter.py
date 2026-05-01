@@ -1,7 +1,8 @@
 import os
 from typing import Dict, Any
 import markdown2
-
+import re
+import html
 
 def _markdown_to_html(markdown_content: str) -> str:
     """
@@ -24,6 +25,9 @@ def _markdown_to_html(markdown_content: str) -> str:
         - footnotes: 脚注
         - strike: 删除线
         - task_list: 任务列表
+        
+        额外处理：
+        - Mermaid 图表代码块转换为可渲染的格式
     """
     extras = [
         'fenced-code-blocks',
@@ -34,7 +38,59 @@ def _markdown_to_html(markdown_content: str) -> str:
         'strike',
         'task_list'
     ]
-    return markdown2.markdown(markdown_content, extras=extras)
+    html_content = markdown2.markdown(markdown_content, extras=extras)
+    
+    # 将 Mermaid 代码块转换为可渲染的格式
+    html_content = _process_mermaid_blocks(html_content)
+    
+    return html_content
+
+
+def _process_mermaid_blocks(html_content: str) -> str:
+    """
+    处理 Mermaid 图表代码块，将其转换为可渲染的格式
+
+    Args:
+        html_content (str): HTML 内容字符串
+
+    Returns:
+        str: 处理后的 HTML 内容，Mermaid 代码块已转换为可渲染格式
+    """
+    # Mermaid 图表的标识关键字
+    mermaid_keywords = [
+        'graph',
+        'sequenceDiagram',
+        'pie',
+        'classDiagram',
+        'stateDiagram-v2',
+        'stateDiagram',
+        'gantt',
+        'journey',
+        'erDiagram',
+        'flowchart',
+        'C4Context'
+    ]
+    
+    # 匹配 <pre><code>...</code></pre> 格式
+    # 捕获代码内容，检查是否以 Mermaid 关键字开头
+    pattern = r'<pre><code>(.*?)</code></pre>'
+    
+    def replace_mermaid(match):
+        code_content = match.group(1)
+        # 检查代码是否以 Mermaid 关键字开头（去除首尾空白后）
+        stripped_code = code_content.strip()
+        for keyword in mermaid_keywords:
+            if stripped_code.startswith(keyword):
+                # HTML 解码，还原转义的特殊字符（如 &gt; -> >）
+                decoded_content = html.unescape(code_content)
+                return f'<pre class="mermaid">{decoded_content}</pre>'
+        # 不是 Mermaid 图表，保持原样
+        return match.group(0)
+    
+    # 使用 re.DOTALL 使 . 匹配换行符
+    result = re.sub(pattern, replace_mermaid, html_content, flags=re.DOTALL)
+    
+    return result
 
 
 class HTMLExporter:
@@ -205,11 +261,26 @@ class HTMLExporter:
                     border-top: 1px solid #ddd;
                     margin: 20px 0;
                 }}
+                /* Mermaid 图表样式 */
+                .mermaid {{
+                    display: flex;
+                    justify-content: center;
+                    margin: 20px 0;
+                }}
                 {custom_css}
             </style>
         </head>
         <body>
             {body_content}
+            <!-- Mermaid 图表渲染脚本 -->
+            <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+            <script>
+                mermaid.initialize({{ 
+                    startOnLoad: true,
+                    theme: 'default',
+                    securityLevel: 'loose'
+                }});
+            </script>
         </body>
         </html>
         """
