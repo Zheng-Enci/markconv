@@ -19,7 +19,7 @@ def _replace_mermaid_with_images(md_content: str, output_dir: str) -> str:
     
     Args:
         md_content (str): Markdown 内容字符串
-        output_dir (str): 图片输出目录
+        output_dir (str): 图片输出目录（会在此目录下创建 mermaid_images 子目录）
         
     Returns:
         str: 处理后的 Markdown 内容，Mermaid 代码块已替换为图片引用
@@ -34,7 +34,9 @@ def _replace_mermaid_with_images(md_content: str, output_dir: str) -> str:
     if not mermaid_blocks:
         return md_content
     
-    processor = MermaidProcessor(output_dir=output_dir)
+    # 在 output_dir 下创建 mermaid_images 子目录存放临时图片
+    mermaid_images_dir = os.path.join(output_dir, 'mermaid_images')
+    processor = MermaidProcessor(output_dir=mermaid_images_dir)
     result = md_content
     
     for i, (mermaid_code, full_match) in enumerate(mermaid_blocks):
